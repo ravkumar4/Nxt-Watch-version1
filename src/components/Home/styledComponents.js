@@ -6,7 +6,12 @@ export const HomeContainer = styled.div`
   min-width: 800px;
   max-width: 1800px;
   width: 100%;
-  height: 100vh;
+
+  @media (max-width: 567px) {
+    min-width: 150px;
+    max-width: 569px;
+    width: 100%;
+  }
 `
 export const InnerHomeContainer = styled.div`
   display: flex;
@@ -15,79 +20,12 @@ export const InnerHomeContainer = styled.div`
   min-width: 800px;
   max-width: 1800px;
   width: 100%;
-  height: 100vh;
-`
-export const InnerSideBar = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding-left: 0;
-`
-export const SideBarContainer = styled.div`
-  min-width: 150px;
-  max-width: 300px;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 20px;
 
   @media (max-width: 567px) {
-    display: none;
+    min-width: 150px;
+    max-width: 569px;
+    width: 99%;
   }
-`
-
-export const SideText = styled.h1`
-  color: #181818;
-  font-family: 'Roboto';
-  font-size: 17px;
-  font-weight: 500;
-  margin-left: 10px;
-`
-
-export const FooterSideBar = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 5px;
-`
-export const ContactHeader = styled.h1`
-  color: #212121;
-  font-family: 'Roboto';
-  font-size: 17px;
-  margin-left: 0;
-  padding-left: 0;
-`
-export const LogoContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 5px;
-`
-
-export const CompanyLogo = styled.img`
-  height: 30px;
-  width: 30px;
-  margin-right: 10px;
-`
-
-export const CompanyText = styled.p`
-  font-family: 'Roboto';
-  color: #212121;
-  font-size: 19px;
-  font-weight: 500;
-`
-
-export const CustomButton = styled.button`
-  background-color: transparent;
-  border: none;
-  outline: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
 `
 
 export const BannerContainer = styled.div`
@@ -149,13 +87,13 @@ export const VideosContainer = styled.div`
   min-width: 500px;
   max-width: 1500px;
   width: 100%;
-  height: 80vh;
   padding: 10px;
 `
 
 export const SearchContainer = styled.div`
   min-width: 50px;
   max-width: 500px;
+  padding-left: 40px;
   width: 470px;
   display: flex;
   margin-top: 30px;
@@ -177,6 +115,7 @@ export const SearchButton = styled.button`
   cursor: pointer;
   padding-left: 20px;
   padding-right: 20px;
+  // border:  border: 1px solid #64748b;
 
   @media (max-width: 567px) {
     padding-left: 15px;
@@ -194,6 +133,7 @@ export const FailureContainer = styled.div`
     width: 550px;
   }
 `
+
 export const FailureImage = styled.img`
   height: 250px;
   width: 250px;
@@ -234,6 +174,14 @@ export const FailureRetryButton = styled.button`
 `
 export const VideosUnOrderedList = styled.ul`
   display: flex;
+  flex-wrap: wrap;
+  flex-grow: 1;
+
+  @media (max-width: 567px) {
+    min-width: 150px;
+    max-width: 569px;
+    width: 95%;
+  }
 `
 export const LoadingContainer = styled.div`
   display: flex;

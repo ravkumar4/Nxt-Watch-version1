@@ -31,9 +31,9 @@ class Login extends Component {
   onChangeShowPassword = () =>
     this.setState(prevState => ({showPassword: !prevState.showPassword}))
 
-  onSubmitSuccess = jwtToken => {
+  onSubmitSuccess = token => {
     const {history} = this.props
-    Cookies.set('jwtToken', jwtToken, {expires: 30})
+    Cookies.set('jwt_token', token, {expires: 30})
     history.replace('/')
   }
 

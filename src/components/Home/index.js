@@ -1,23 +1,15 @@
 import {Component} from 'react'
-import {AiFillHome, AiOutlineCloseCircle} from 'react-icons/ai'
-import {FaHotjar, FaGamepad} from 'react-icons/fa'
-import {CgPlayListAdd} from 'react-icons/cg'
+import {AiOutlineCloseCircle} from 'react-icons/ai'
+// import {FaHotjar, FaGamepad} from 'react-icons/fa'
 import {BiSearch} from 'react-icons/bi'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
 import Header from '../Header'
 import VideoItem from '../VideoItem'
+import Sidebar from '../Sidebar'
+import FailureView from '../FailureView'
 import {
   HomeContainer,
-  SideBarContainer,
-  SideText,
-  InnerSideBar,
-  FooterSideBar,
-  ContactHeader,
-  LogoContainer,
-  CompanyLogo,
-  CompanyText,
-  CustomButton,
   LoadingContainer,
   BannerContainer,
   BannerImageLogo,
@@ -46,8 +38,9 @@ const apiStatusConstants = {
 
 class Home extends Component {
   state = {
-    apiStatus: apiStatusConstants.initital,
+    apiStatus: apiStatusConstants.initial,
     videosList: [],
+    searchVideo: '',
   }
 
   componentDidMount() {
@@ -56,18 +49,17 @@ class Home extends Component {
 
   fetchVideosFromAPI = async () => {
     this.setState({apiStatus: apiStatusConstants.inProgress})
-    const jwtToken = Cookies.get('jwtToken')
-    const apiVideosUrl = 'https://apis.ccbp.in/videos/all'
+    const {searchVideo} = this.state
+    const jwtToken = Cookies.get('jwt_token')
+    const apiVideosUrl = `https://apis.ccbp.in/videos/all?search=${searchVideo}`
     const options = {
-      header: {
+      headers: {
         Authorization: `Bearer ${jwtToken}`,
       },
       method: 'GET',
     }
     const response = await fetch(apiVideosUrl, options)
-    const apiData = response.json()
-    console.log(response.ok)
-    console.log(apiData)
+    const apiData = await response.json()
     if (response.ok) {
       const updatedData = apiData.videos.map(eachVideo => ({
         id: eachVideo.id,
@@ -91,6 +83,10 @@ class Home extends Component {
     this.fetchVideosFromAPI()
   }
 
+  onChangeSearches = event => this.setState({searchVideo: event.target.value})
+
+  onClickSearches = () => this.fetchVideosFromAPI()
+
   renderVideosSuccessView = () => {
     const {videosList} = this.state
     return (
@@ -102,73 +98,32 @@ class Home extends Component {
     )
   }
 
-  renderLoadingView = () => (
-    <LoadingContainer data-testid="loader">
-      <Loader type="ThreeDots" color="#4f46e5" height="50" width="50" />
-    </LoadingContainer>
-  )
-
-  renderFailureView = () => (
+  renderSearchedVideoFailureView = () => (
     <FailureContainer>
       <FailureImage
-        src="https://assets.ccbp.in/frontend/react-js/nxt-watch-failure-view-light-theme-img.png"
-        alt="failure view"
+        src="https://assets.ccbp.in/frontend/react-js/nxt-watch-no-search-results-img.png"
+        alt="no videos"
       />
-      <FailureHeading>Oops! Something Went Wrong</FailureHeading>
-      <FailureText>
-        We are having some trouble to complete your request. Please try again.
-      </FailureText>
+      <FailureHeading>No Searches Found</FailureHeading>
+      <FailureText>Try with different keys to get the results</FailureText>
       <FailureRetryButton type="button" onClick={this.onClickRetry}>
         Retry
       </FailureRetryButton>
     </FailureContainer>
   )
 
-  renderSidebar = () => (
-    <SideBarContainer>
-      <InnerSideBar>
-        <CustomButton>
-          <AiFillHome style={{fontSize: '22px'}} />
-          <SideText>Home</SideText>
-        </CustomButton>
-        <CustomButton>
-          <FaHotjar style={{fontSize: '22px'}} />
-          <SideText>Trending</SideText>
-        </CustomButton>
-        <CustomButton>
-          <FaGamepad style={{fontSize: '22px'}} />
-          <SideText>Gaming</SideText>
-        </CustomButton>
-        <CustomButton>
-          <CgPlayListAdd style={{fontSize: '22px'}} />
-          <SideText>Saved Videos</SideText>
-        </CustomButton>
-      </InnerSideBar>
-      <FooterSideBar>
-        <ContactHeader>CONTACT US</ContactHeader>
-        <LogoContainer>
-          <CompanyLogo
-            src="https://assets.ccbp.in/frontend/react-js/nxt-watch-facebook-logo-img.png"
-            alt="facebook logo"
-          />
-          <CompanyLogo
-            src="https://assets.ccbp.in/frontend/react-js/nxt-watch-twitter-logo-img.png"
-            alt="twitter logo"
-          />
-          <CompanyLogo
-            src="https://assets.ccbp.in/frontend/react-js/nxt-watch-linked-in-logo-img.png"
-            alt="linked in logo"
-          />
-        </LogoContainer>
-        <CompanyText>
-          Enjoy! Now to see your channels and recommendations!
-        </CompanyText>
-      </FooterSideBar>
-    </SideBarContainer>
+  renderLoadingView = () => (
+    <LoadingContainer data-testid="loader">
+      <Loader type="ThreeDots" color="#4f46e5" height="50" width="50" />
+    </LoadingContainer>
   )
 
+  renderFailureView = () => <FailureView onRetry={this.onClickRetry} />
+
+  renderSidebar = () => <Sidebar />
+
   renderBanner = () => (
-    <BannerContainer>
+    <BannerContainer data-testid="banner">
       <div>
         <BannerImageLogo
           alt="nxt watch logo"
@@ -187,8 +142,17 @@ class Home extends Component {
 
   renderSearchContainer = () => (
     <SearchContainer>
-      <SearchInputContainer type="search" placeholder="Search" />
-      <SearchButton type="button">
+      <SearchInputContainer
+        type="search"
+        placeholder="Search"
+        onChange={this.onChangeSearches}
+        onKeyDown={this.onKeyDownSearches}
+      />
+      <SearchButton
+        type="button"
+        data-testid="searchButton"
+        onClick={this.onClickSearches}
+      >
         <BiSearch />
       </SearchButton>
     </SearchContainer>
@@ -203,16 +167,14 @@ class Home extends Component {
         return this.renderFailureView()
       case apiStatusConstants.inProgress:
         return this.renderLoadingView()
-
       default:
         return null
     }
   }
 
   render() {
-    const {apiStatus, videosList} = this.state
-    console.log(apiStatus)
-    console.log(videosList)
+    const {videosList} = this.state
+    console.log(videosList.length)
     return (
       <>
         <Header />
@@ -222,6 +184,7 @@ class Home extends Component {
             {this.renderBanner()}
             <VideosContainer>
               {this.renderSearchContainer()}
+              {videosList.length === 0 && this.renderSearchedVideoFailureView()}
               {this.renderApiView()}
             </VideosContainer>
           </InnerHomeContainer>
